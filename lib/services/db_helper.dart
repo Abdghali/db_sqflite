@@ -45,7 +45,7 @@ class DBHelper {
     }
   }
 
- Future<List<Task>>  getAllTasks() async {
+  Future<List<Task>> getAllTasks() async {
     List<Task> tasks = [];
     List<Map<String, dynamic>> allTasks = await myDatabase!.query(tableName!);
     allTasks.forEach((element) {
@@ -56,9 +56,20 @@ class DBHelper {
     return tasks;
   }
 
-  
+  deleteTask(int? id) async {
+    
+        await myDatabase!.delete(tableName!, where: 'id=?', whereArgs: [id]);
+ }
+
+
 
   getTaskById(int? id) {}
-  updateTask(Task _task) {}
-  deleteTask(int? id) {}
+
+  updateTask(Task task)async {
+  int value = await myDatabase!.update(tableName!,task.toJson(), where: 'id=?', whereArgs: [task.id]);
+    print(value);
+  }
+
+
+
 }

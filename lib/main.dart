@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sqflite/services/db_helper.dart';
 import 'package:flutter_sqflite/views/home.dart';
 
- main() async {
- WidgetsFlutterBinding.ensureInitialized();
- await DBHelper.dbHelper.initDB();
+ main() async { WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.dbHelper.initDB();
  runApp(const MyApp());
 }
 

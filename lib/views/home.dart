@@ -15,6 +15,10 @@ class _HomeScreenState extends State<HomeScreen> {
       TextEditingController(text: 'Task');
   TextEditingController textEditingControllerIsDone =
       TextEditingController(text: '0');
+  TextEditingController textEditingControllerUpdate =
+      TextEditingController(text: 'Task');
+  TextEditingController textEditingControllerIsDoneUpdate =
+      TextEditingController(text: '0');
   List<Task> tasks = [];
 
   getAllTaskData() async {
@@ -28,6 +32,80 @@ class _HomeScreenState extends State<HomeScreen> {
         isDone: int.parse(textEditingControllerIsDone.text));
     DBHelper.dbHelper.addTask(task);
     getAllTaskData();
+  }
+
+  deleteTask(int? id) {
+    DBHelper.dbHelper.deleteTask(id);
+    getAllTaskData();
+  }
+
+  updateTask(Task task) {
+    DBHelper.dbHelper.updateTask(task);
+    getAllTaskData();
+  }
+
+  showAlertDialog(BuildContext context, int? id) {
+
+
+    
+    // set up the button
+    Widget updateButton = TextButton(
+      child: Text("update"),
+      onPressed: () {
+        Task task = Task(
+            id: id,
+            taskName: textEditingControllerUpdate.text,
+            isDone: int.parse(textEditingControllerIsDoneUpdate.text));
+         DBHelper.dbHelper.updateTask(task);
+         getAllTaskData();
+
+        Navigator.pop(context);
+      },
+    );
+    Widget cancelButton = TextButton(
+      child: Text(
+        "Cancel",
+        style: TextStyle(color: Colors.red),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Update Task"),
+      content: Container(
+        height: 200,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                decoration: InputDecoration(label: Text("Task name")),
+                controller: textEditingControllerUpdate,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                decoration: InputDecoration(label: Text("isDone 0:1")),
+                controller: textEditingControllerIsDoneUpdate,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [updateButton, cancelButton],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -49,9 +127,20 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(tasks[index].taskName!),
-                    subtitle: Text(tasks[index].isDone.toString()),
+                  return GestureDetector(
+                    onTap: (() => showAlertDialog(context, tasks[index].id)),
+                    child: ListTile(
+                      trailing: IconButton(
+                          onPressed: () {
+                            deleteTask(tasks[index].id);
+                          },
+                          icon: Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                          )),
+                      title: Text(tasks[index].taskName!),
+                      subtitle: Text(tasks[index].isDone.toString()),
+                    ),
                   );
                 }),
           ),
